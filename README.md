@@ -1,2 +1,3 @@
-# 2020capstone
-2020 capstone project
+# CAU 2020 - 1 Capstone Project
+
+Highlight Word test chrome extension application
