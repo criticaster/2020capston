@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <script src="popup.js"></script>
+        <style>
+            body{
+                width: auto;
+                height: auto;
+            }
+            #search-input{
+                height: 20px;
+                width: 200px;
+                font-size:14px;
+                font-weight: bold;
+                border-style: solid;
+                outline: none;
+                padding-left: 5px;
+            }
+            #search-result div{
+                height: 50px;
+                border: solid;
+                border-top : none;
+                border-width: 1px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='search-div'>
+            <form>
+                <input type="text" id='search-input' autocomplete="off" autofocus/>
+                <input type="submit" hidden id='search-button' value="검색"/>
+            </form>
+        </div>
+        <div id='search-result'>
+        </div> 
+    </body>
+</html>
