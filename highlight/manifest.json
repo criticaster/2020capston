@@ -16,7 +16,7 @@
     },
 
     "background": {
-        "scripts": ["eventPage.js"],
+        "scripts": ["eventPage.js", "jquery-3.5.0.min.js"],
         "persistent": false
     },
 
@@ -38,6 +38,14 @@
         "tabs",
         "activeTab",
         "storage",
-        "contextMenus"
-    ]
+        "contextMenus",
+        "notifications"
+    ],
+
+    "content_scripts": [{
+      "matches": [ "<all_urls>" ],
+      "js": ["jquery-3.5.0.min.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }]
 }
