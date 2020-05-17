@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "HighLight Dictionary",
+    "name": "Word Saver",
     "version": "1.0",
-    "description": "highlight dictionary",
+    "description": "Word Saver",
     
     "icons": {
         "128": "icon128.png",
@@ -16,7 +16,7 @@
     },
 
     "background": {
-        "scripts": ["eventPage.js", "jquery-3.5.0.min.js"],
+        "scripts": ["eventPage.js", "jquery-3.5.0.min.js","background.js"],
         "persistent": false
     },
 
@@ -29,7 +29,6 @@
           "description": "Opens popup.html"
         }
     },
-
     
     "options_page": "options.html",
 
@@ -39,12 +38,16 @@
         "activeTab",
         "storage",
         "contextMenus",
-        "notifications"
+        "notifications",
+        "tts"
     ],
 
     "content_scripts": [{
       "matches": [ "<all_urls>" ],
-      "js": ["jquery-3.5.0.min.js"],
+      "js": ["jquery-3.5.0.min.js", "tooltip.js", "background.js"],
+
+      "css":["style.css"],
+      
       "run_at": "document_idle",
       "all_frames": true
     }]

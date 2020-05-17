@@ -1,4 +1,3 @@
-
 window.addEventListener("load", function(){
     
     var searchInput = document.querySelector('#search-input');
@@ -29,8 +28,6 @@ window.addEventListener("load", function(){
                         var divNode = document.createElement("div");
                         var divTitleNode = document.createElement("h2");
                         var divUlNode = document.createElement("ul");
-
-
                         data = data.substring(ptr1 + 11);
                         divTitleNode.innerText = data.substring(0, data.indexOf('</span>'));
                         data = data.substring(data.indexOf('list_search">') + 13);
@@ -45,7 +42,6 @@ window.addEventListener("load", function(){
                 }
             });
             searchButton.focus();
-            searchButton.value = "저장";
         }
         // searchInput.value = "";
         return false;
@@ -54,6 +50,5 @@ window.addEventListener("load", function(){
     searchInput.onfocus  = function(){
         searchResultDiv.innerHTML="";
         searchInput.value="";
-        searchButton.value="검색";
     };
 });
