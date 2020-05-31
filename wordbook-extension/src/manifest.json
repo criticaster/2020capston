@@ -12,9 +12,8 @@
     "default_popup": "popup/popup.html"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "scripts": ["background.js"],
+    "persistent" : false
   },
   "options_ui": {
     "page": "options/options.html",
@@ -22,7 +21,10 @@
   },
   "permissions": [
     "storage",
-    "alarms"
+    "alarms",
+    "*://*.daum.net/*",
+    "contextMenus",
+    "notifications"
   ],
   "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'; connect-src 'self' wss://*.firebaseio.com;"
   

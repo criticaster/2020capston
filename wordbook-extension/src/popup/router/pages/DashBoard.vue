@@ -1,7 +1,8 @@
 <template>
     <div class="container">
         <b-img :src="img"></b-img>
-        <h3>샘플 이미지입니다</h3>
+        <h3 class="text-center">샘플 이미지</h3>
+        
     </div>
     
 </template>
