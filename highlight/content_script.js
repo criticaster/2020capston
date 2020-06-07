@@ -42,41 +42,30 @@ function mousewheelEvent(e){
 
 
 function mouseupEvent(e){
-   
     var selectedText = getSelectedText();
     if(selectedText != ''){
         if (tooltip.style.display == "none"){
             tooltip.style.left = (e.clientX)+"px";
             tooltip.style.top = (e.clientY+20)+"px";
-            selectedText = selectedText.toLowerCase();
-            selectedText = selectedText.trim();
-            var no_space = selectedText.indexOf(' ');
-            if (no_space == -1) {
-                chrome.runtime.sendMessage({todo: "searchThis", word : selectedText}, function(response){
-                    if (response.res == "NO_SEARCH_RESULT"){
-                        tooltip.style.display = "none";
-                    }
-                    else{
-                        
-                        tooltip.innerHTML = response.res;
-                        btn = tooltip.querySelector(".highlight_tooltip_word");
-                        btn.onclick = function(){
-                            chrome.runtime.sendMessage({todo: "speakIt", word : btn.innerHTML}); 
-                        };
-                        tooltip.style.display = "block";
-                    }
-                });   
-            }
-            else{
-                tooltip.style.display = "none";
-            }
+            chrome.runtime.sendMessage({todo: "searchThis", word : selectedText}, function(response){
+                if (response.res == "NO_SEARCH_RESULT"){
+                    tooltip.style.display = "none";
+                }
+                else{
+                    tooltip.innerHTML = response.res;
+                    btn = tooltip.querySelector(".highlight_tooltip_word");
+                    btn.onclick = function(){
+                        chrome.runtime.sendMessage({todo: "speakIt", word : btn.innerHTML}); 
+                    };
+                    tooltip.style.display = "block";
+                }
+            });   
         }
     }
     else{
         tooltip.style.display = "none";
     }
 }
-
 
 
 function init(){

@@ -1,14 +1,16 @@
+
 var contextMenuItem = {
     "id": "bookmark",
     "title" : "Highlight사전 단어장에 추가",
     "contexts" : ["selection"]
 }
 
-  // chrome.contextMenus.create(contextMenuItem)
+
+var show_tooltip = true;
+
 chrome.runtime.onInstalled.addListener(function(){
     chrome.contextMenus.create(contextMenuItem)
 })
-
 
 function isEnglishWord(str){
     var letters = /^[a-zA-Z]+$/;
@@ -149,64 +151,74 @@ chrome.contextMenus.onClicked.addListener(function(clickData) {
     }
 });
 
-function searchForTooltip(word) {
+function searchForTooltip(selected_str) {
+
+    var word = selected_str.toLowerCase();  
+    word = word.trim();
     var tooltip_content = "";
-    word = convertToProperWord(word);
-    if (word == "NO_SEARCH_RESULT"){
-        tooltip_content = "NO_SEARCH_RESULT";
+
+    if(isEnglishWord(word)){
+        word = convertToProperWord(word);
+        if (word == "NO_SEARCH_RESULT"){
+            tooltip_content = "NO_SEARCH_RESULT";
+        }
+        else{
+            var dic_url = "http://tooltip.dic.naver.com/tooltip.nhn?wordString=" + word + "&languageCode=4&nlp=false";
+            $.ajax({
+                url: dic_url,
+                crossDomain: false,
+                dataType: 'html',
+                async: false,
+                success: function(data){
+                    var has_result = data.indexOf('{"entryID":');
+                    if(has_result == -1){
+                        tooltip_content = "NO_SEARCH_RESULT";
+                    }
+                    else {
+                        data = data.substring(data.indexOf('"entryName":') + 13);
+                        var entryName = data.substring(0, data.indexOf('"'));
+                        tooltip_content = '<button class="highlight_tooltip_word" style="font-size:0.7em; margin:0px; background-color:#373737; border:0; outline:0px; padding:0px; font-weight:700; color:yellow;">';
+                        tooltip_content += entryName + ' <img src="https://raw.githubusercontent.com/km01/km01.github.io/master/assets/img/mic16_3.png"> </button>';
+                        var mean_list_src = data.substring(data.indexOf('"mean":[') + 7, data.indexOf('"],"') + 2);
+                        var mean_list = [];
+                        var count = 0;
+                        tooltip_content += '<span class="highlight_tooltip_colon" style="font-size:0.7em; font-weight:900; margin-top:0px; color:white;"> : </span>';
+                        tooltip_content += '<span class="highlight_tooltip_mean" style="font-size:0.7em; font-weight:400; margin-top:0px; color:white;">';
+                        while(true){
+                            var head = mean_list_src.indexOf('"');
+                            if (head == -1){
+                                break;
+                            }
+                            mean_list_src = mean_list_src.substring(head + 1);
+                            var tail = mean_list_src.indexOf('"');
+                            mean_list.push(mean_list_src.substring(0, tail));
+                            mean_list_src = mean_list_src.substring(tail + 1);
+        
+                            count++;
+                            if(count > 30) {
+                                break;
+                            }
+                        }
+                        for (var i = 0; i<mean_list.length-1; i++){
+                            tooltip_content += mean_list[i] + ", ";
+                        }
+                        tooltip_content += mean_list[mean_list.length - 1] + " ";
+                        tooltip_content += '</span>';
+                    }
+                }
+            });
+        } 
     }
     else{
-        var dic_url = "http://tooltip.dic.naver.com/tooltip.nhn?wordString=" + word + "&languageCode=4&nlp=false";
-        $.ajax({
-            url: dic_url,
-            crossDomain: false,
-            dataType: 'html',
-            async: false,
-            success: function(data){
-                var has_result = data.indexOf('{"entryID":');
-                if(has_result == -1){
-                    tooltip_content = "NO_SEARCH_RESULT";
-                }
-                else {
-                    data = data.substring(data.indexOf('"entryName":') + 13);
-                    var entryName = data.substring(0, data.indexOf('"'));
-                    tooltip_content = '<button class="highlight_tooltip_word" style="font-size:0.7em; margin:0px; background-color:#373737; border:0; outline:0px; padding:0px; font-weight:700; color:yellow;">';
-                    tooltip_content += entryName + ' <img src="https://raw.githubusercontent.com/km01/km01.github.io/master/assets/img/mic16_3.png"> </button>';
-                    var mean_list_src = data.substring(data.indexOf('"mean":[') + 7, data.indexOf('"],"') + 2);
-                    var mean_list = [];
-                    var count = 0;
-                    tooltip_content += '<span class="highlight_tooltip_colon" style="font-size:0.7em; font-weight:900; margin-top:0px; color:white;"> : </span>';
-                    tooltip_content += '<span class="highlight_tooltip_mean" style="font-size:0.7em; font-weight:400; margin-top:0px; color:white;">';
-                    while(true){
-                        var head = mean_list_src.indexOf('"');
-                        if (head == -1){
-                            break;
-                        }
-                        mean_list_src = mean_list_src.substring(head + 1);
-                        var tail = mean_list_src.indexOf('"');
-                        mean_list.push(mean_list_src.substring(0, tail));
-                        mean_list_src = mean_list_src.substring(tail + 1);
-    
-                        count++;
-                        if(count > 30) {
-                            break;
-                        }
-                    }
-                    for (var i = 0; i<mean_list.length-1; i++){
-                        tooltip_content += mean_list[i] + ", ";
-                    }
-                    tooltip_content += mean_list[mean_list.length - 1] + " ";
-                    tooltip_content += '</span>';
-                }
-            }
-        });
+        tooltip_content = "NO_SEARCH_RESULT";
     }
     return tooltip_content;
 }
 
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.todo == "searchThis") {
-        sendResponse({res: searchForTooltip(request.word)});
+        sendResponse({res:searchForTooltip(request.word)});
     }
     if(request.todo == "speakIt"){
         chrome.tts.speak(request.word, {'lang':'en-US', 'rate':1.0});
