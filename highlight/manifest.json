@@ -1,35 +1,15 @@
 {
     "manifest_version": 2,
-    "name": "Word Saver",
+    "name": "HightLight Dictionary",
     "version": "1.0",
-    "description": "Word Saver",
-    
+    "description": "HightLight Dictionary",
+
     "icons": {
         "128": "icon128.png",
         "48": "icon48.png",
         "16": "icon16.png"
     },
 
-    "browser_action":{
-        "default_icon": "icon16.png",
-        "default_popup": "popup.html"
-    },
-
-    "background": {
-        "scripts": ["eventPage.js", "jquery-3.5.0.min.js","background.js"],
-        "persistent": false
-    },
-
-    "commands": {
-        "_execute_browser_action": {
-          "suggested_key": {
-            "default": "Ctrl+Shift+Z",
-            "mac": "MacCtrl+Shift+Z"
-          },
-          "description": "Opens popup.html"
-        }
-    },
-    
     "options_page": "options.html",
 
     "permissions": [
@@ -41,14 +21,21 @@
         "notifications",
         "tts"
     ],
+    
+    "background": {
+      "scripts": ["jquery-3.5.0.min.js", "background.js"],
+      "persistent": false
+    },
+    
+    "browser_action":{
+      "default_popup": "popup.html"
+    },
 
-    "content_scripts": [{
-      "matches": [ "<all_urls>" ],
-      "js": ["jquery-3.5.0.min.js", "tooltip.js", "background.js"],
-
-      "css":["style.css"],
-      
-      "run_at": "document_idle",
-      "all_frames": true
-    }]
-}
+   "content_scripts": [
+     {
+       "matches": ["<all_urls>"],
+       "js": ["content_script.js", "jquery-3.5.0.min.js"]
+     }
+   ]
+ }
+ 
