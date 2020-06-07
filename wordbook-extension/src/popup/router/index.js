@@ -13,6 +13,7 @@ import {firestorePlugin} from 'vuefire'
 import VueGoodTablePlugin from 'vue-good-table'
 import 'vue-good-table/dist/vue-good-table.css'
 import AxiosPlugin from 'vue-axios-cors'
+import _ from 'lodash'
 
 Vue.use(VueRouter)
 Vue.use(firebase)
@@ -21,7 +22,7 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VueGoodTablePlugin)
 Vue.use(AxiosPlugin)
-
+window._ = require('lodash');
 
 
 export default new VueRouter({

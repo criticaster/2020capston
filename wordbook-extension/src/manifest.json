@@ -13,7 +13,7 @@
   },
   "background": {
     "scripts": ["background.js"],
-    "persistent" : false
+    "persistent" : true
   },
   "options_ui": {
     "page": "options/options.html",
@@ -24,7 +24,18 @@
     "alarms",
     "*://*.daum.net/*",
     "contextMenus",
-    "notifications"
+    "notifications",
+    "tts",
+    "background",
+    "tabs",
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "persistent": false
+    }
   ],
   "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'; connect-src 'self' wss://*.firebaseio.com;"
   
