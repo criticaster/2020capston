@@ -4,21 +4,30 @@ window.addEventListener("load", function(){
             var wordTable = document.querySelector('#highlight_tbody');
             for (var i = 0; i<userData.word_list.length; i++){
                 var row = wordTable.insertRow(wordTable.rows.length);
-                var cell1 = row.insertCell(0);
-                var cell2 = row.insertCell(1);
-                var cell3 = row.insertCell(2);
-                var cell4 = row.insertCell(3);
-                var cell5 = row.insertCell(4);
+                var cell1 = row.insertCell(0); //단어 칸
+                var cell2 = row.insertCell(1); // 뜻 칸
+                var cell3 = row.insertCell(2); //저장날짜 칸
+                var cell4 = row.insertCell(3); // 듣기 칸
+                var cell5 = row.insertCell(4); // 삭제 칸
+                
+                //단어 칸
                 cell1.innerHTML = "<strong>"+userData.word_list[i].word + "</strong>";
+                
+                //뜻 칸
                 cell2.innerHTML= userData.word_list[i].ko_means;
+                
+                //저장날짜칸
                 cell3.innerHTML = userData.word_list[i].date;
 
+
+                // 듣기칸
                 cell4.innerHTML = "<input type='image' src='speaker.png' id='btn_"+userData.word_list[i].word  + "' >";
                 document.getElementById("btn_"+ userData.word_list[i].word).onclick= function(){
                     var word = this.id.substring(4);
                     chrome.tts.speak(word, {'lang':'en-US', 'rate':1.0});
                 };
 
+                //삭제 칸
                 cell5.innerHTML = "<input type='button' value='제거' id='del_"+userData.word_list[i].word  + "' >";
                 document.getElementById("del_"+ userData.word_list[i].word).onclick= function(){
                     var word = this.id.substring(4);
@@ -29,7 +38,6 @@ window.addEventListener("load", function(){
                             break;
                         }
                     }
-                    
                     if (confirm(word + "를 제거하시겠습니까?")){
                         var updated_word_list = userData.word_list.splice(idx_to_del, 1);
                         updated_word_list = userData.word_list
