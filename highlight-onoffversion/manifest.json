@@ -1,0 +1,40 @@
+{
+    "manifest_version": 2,
+    "name": "HighLight Dictionary",
+    "version": "1.0",
+    "description": "HighLight Dictionary",
+
+    "icons": {
+        "128": "icon128.png",
+        "48": "icon48.png",
+        "16": "icon16.png"
+    },
+
+    "options_page": "options.html",
+
+    "permissions": [
+        "background",
+        "tabs",
+        "storage",
+        "contextMenus",
+        "notifications",
+        "tts"
+    ],
+    
+    "background": {
+      "scripts": ["jquery-3.5.0.min.js", "background.js"],
+      "persistent": false
+    },
+    
+    "browser_action":{
+      "default_popup": "popup.html"
+    },
+
+   "content_scripts": [
+     {
+       "matches": ["<all_urls>"],
+       "js": ["content_script.js", "jquery-3.5.0.min.js"]
+     }
+   ]
+ }
+ 

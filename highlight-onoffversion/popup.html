@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <script src="jquery-3.5.0.min.js"></script>
+        <script src="popup.js"></script>
+        <style>
+            body{
+                width: auto;
+                height: auto;
+            }
+            
+            #search-input{
+                font-size:18px;
+                font-weight: bold;
+                padding-left: 7px;
+                outline: none;
+                height: 26px;
+                width: 228px;
+                border:none;
+                margin-right: 0px;
+                margin-bottom: 0px;
+                margin-top: 0px;
+            }
+            
+            #search-button{
+                height: 27px;
+                width: 31px;
+                margin: 0px;
+                padding: 0px;
+                /* outline: none; */
+                border: none;
+                font-weight: bold;
+                background-color: white;
+            }
+
+            #search-div{
+                height: 28px;
+                width: 270px;
+                border-style: solid;
+                border-color: steelblue;
+                display: inline-block;
+                margin-right: 0px;
+                padding:0px;
+            }
+
+            #search-result div{
+                height: auto;
+                width: auto;
+                border: solid;
+                /* border-top : none; */
+                border-width: 1px;
+                margin-bottom: 1px;
+                width:273px;
+            }
+
+            #search-result div h2{
+                margin-top: 3px;
+                margin-bottom: 3px;
+                padding-left: 10px;
+                /* color:yellowgreen; */
+                color:steelblue;
+            }
+
+            #search-result div ul{
+                list-style: none;
+                padding-inline-start: 0px;
+                margin-block-start: 0em;
+                padding-left: 12px;
+                font-size: 10px;
+                font-weight: 500;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='search-div'>
+            <form>
+                <input type="text" id='search-input' autocomplete="off" autofocus/>
+                <input type="submit" id='search-button' value="검색"/>
+            </form>
+        </div>
+        <div id='search-result'>
+        </div> 
+    </body>
+</html>
