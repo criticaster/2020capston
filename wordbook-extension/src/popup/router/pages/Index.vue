@@ -7,6 +7,14 @@
     </b-navbar>
   <div class="container">
     <div class="page">
+      <div class="row">
+        <div class="col-sm-9"></div>
+        <div class="col-sm-3">
+          <b-form-checkbox v-on:change="tooltip_change" v-model="tooltip" name="tooltip-check-button" switch>
+            <p>툴 팁 <span v-if="tooltip">ON</span><span v-else>OFF</span></p>
+          </b-form-checkbox>
+        </div>
+      </div>
         <div class="row">
           <b-input-group class="mt-3">
             <b-form-input id='search_input' v-model="user_input" placeholder="찾고싶은 영어 단어를 입력해주세요."></b-form-input>
@@ -28,8 +36,6 @@
           </div>
         </div>
       </div>
-      
-  
       
       <br/>
 
@@ -70,7 +76,9 @@ export default {
       form: {},
       search_result : "검색을 해주세요",
       user_input: "",
-      record: []
+      record: [],
+      tooltip : null,
+      
     }
   },
   beforeMount() {
@@ -80,9 +88,40 @@ export default {
     
   },
   created() {
-    
+    this.init()
+
   },
   methods: {
+    init : function() {
+            var self = this
+            chrome.storage.sync.get(['tooltip'], function(userData) {
+                
+                self.tooltip = userData.tooltip
+              
+            })
+    },
+    tooltip_change(){
+      this.tooltip = !this.tooltip
+      
+      var current_state = this.tooltip
+      chrome.storage.sync.get(['tooltip'], function(userData){
+        console.log("툴팁 가져옴", userData.tooltip)
+        
+        chrome.storage.sync.set({'tooltip': current_state}, function(){
+            console.log("툴팁 세팅", current_state)
+            if(current_state == true){
+
+                alert("툴팁이 활성화 되었습니다.\n웹 페이지를 새로고침 후 사용하세요.")
+            }
+            else{
+
+                alert("툴팁이 비활성화 되었습니다.\n웹 페이지를 새로고침 후 사용하세요.")
+            }
+        })
+    })
+    chrome.runtime.sendMessage({todo: "toggle_tooltip"}); 
+      
+    },
     search() { 
       var input = document.getElementById('search_input').value
       //alert("input:::::", input)
@@ -146,37 +185,34 @@ export default {
               console.log('error', error);
               this.search_result = "검색 결과가 없거나 또는 오류입니다."
           })
-      
-        var search_history = []
-        chrome.storage.sync.get(['search_history'], function(userData){
-          search_history = userData.search_history
-          console.log("get history:::",search_history)
 
-          var isNew = true
-          for(var i=0; i<search_history.length; i++){
-            if(search_history[i].word == input){
-              isNew = false
-            }
-          }
-
-          if(isNew){
-
-            var curDate = new Date();
-            var new_data = {'word':input, 'date':curDate.getFullYear() + '-'+(parseInt(curDate.getMonth())+ 1) +'-'+curDate.getDate()};
-            search_history.push(new_data);
-  
-            console.log("push history:::", search_history)
-            chrome.storage.sync.set({'search_history': search_history}, function(){
-              //alert("히스토리 생성")
-            });
-          }
-          
-        })
+        console.log("여기까지가 히스토리 전")
         
-      
+        
+        chrome.storage.sync.get(['search_history'], function(userData){
+          var search_history = userData.search_history;
+          if(!search_history){
+              search_history = new Array();
+          }
+          var is_new_word = true;
+          for (var i = 0; i<search_history.length; i++){
+              if (search_history[i]['word'] == input){
+                  is_new_word = false;
+              }
+          }
+          if(is_new_word){
+              var curDate = new Date();
+              var new_data = {'word':input, 'date':curDate.getFullYear() + '-'+(parseInt(curDate.getMonth())+ 1) +'-'+curDate.getDate()};
+              search_history.push(new_data);
+              chrome.storage.sync.set({'search_history': search_history}, function(){
+                  
+              });
+          }
+      });
+
+
       }
-    }
-      
+    },
   }
 }
 </script>

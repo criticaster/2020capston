@@ -8,9 +8,16 @@
         <div class="row text-center" v-if="isLoaded">
             <div class="col-sm-12">
                 <div v-show="toggle">
-                    <h5>문 제 ({{current_index+1}} / {{problem_num}})</h5>
-                    <h6 v-if="answer[current_index].type == 'wordToMean'">다음 보기에 알맞은 단어 뜻을 고르세요.</h6>
-                    <h6 v-else>다음 보기에 알맞은 단어를 고르세요.</h6>
+                    <div class="row">
+                        <div class="col-sm-8">  
+                        </div>
+                        <div class="col-sm-4">
+                            <span>&#9; &#9;남은 시간 : {{time}}초</span>
+                        </div>
+                    </div>
+                    <h5>문 제 ({{current_index+1}} / {{problem_num}}) </h5>
+                    <h6 v-if="answer[current_index].type == 'wordToMean'">제한 시간 내에 다음 보기에 알맞은 단어 뜻을 고르세요.</h6>
+                    <h6 v-else>제한 시간 내에다음 보기에 알맞은 단어를 고르세요.</h6>
                     <br/>
                     <legend v-if="answer[current_index].type == 'wordToMean'">{{answer[current_index].question}}</legend> 
                     <legend v-else>{{answer[current_index].question}}</legend> 
@@ -24,8 +31,8 @@
                             name="radio-options"
                         ></b-form-radio-group>
                     </b-form-group>
-                    <b-button v-on:click="next" v-if="current_index < problem_num - 1">다음</b-button>
-                    <b-button v-else @click="getResult()">결과 확인</b-button>
+                    <b-button v-on:click="next" v-if="current_index < problem_num - 1" name="button">다음</b-button>
+                    <b-button v-else @click="getResult()" name="button" id="resultbutton">결과 확인</b-button>
                 </div>
 
             </div>
@@ -61,13 +68,16 @@
                         </span>
                     </template>
                     </vue-good-table>
-            </div>
-
             <br/>
-            <div class="col-sm-12">
-                <b-button variant="outline-primary" v-on:click="gotoMain">메인 화면</b-button>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <b-button variant="outline-primary" v-on:click="gotoMain">메인 화면</b-button>
+                    </div>
+                </div>
             </div>
 
+                
+            
         </div>
         
         
@@ -84,12 +94,13 @@ import icon48 from '../../../icons/icon_48.png'
 
 export default {
 
+    
     data() {
         return {
            
             category : this.$route.params.category,
             type : this.$route.params.type,
-            problem_num : 3,
+            problem_num : this.$route.params.problem_num,
             show_data : [], // 문제 보기
             data_index : 0, // 전체 문제 길이
             current_index : 0, // 현재 문제 번호
@@ -101,10 +112,13 @@ export default {
             isLoaded : false,
             answer:[],
             wrong_answer:[],
+            incorrect_words:[],
             toggle : true,
             isResult : false,
+            keepGoing : true,
             correct : 0,
             incorrect : 0,
+            time : this.$route.params.problem_num * 10,
             columns: [
                 {
                     label: '문제',
@@ -143,7 +157,21 @@ export default {
             
         }
     },
+    
     methods : {
+        timer() {
+            
+            if(this.time > 0 && this.keepGoing){
+                setTimeout(()=>{
+                    this.time -= 1
+                    this.timer()
+                }, 1000)
+            }
+            else if(this.time <= 0) {
+                alert("시간 초과!\n결과 화면으로 이동합니다.")
+                this.getResult()
+            }
+        },
         next() { //다음 버튼 눌렀을 때
 
             this.current_index++;
@@ -210,13 +238,17 @@ export default {
                 })
 
             var rows = []
+            
             //console.log(JSON.stringify(this.user_answer_array))
 
             for(var i=0; i<this.user_answer_array.length; i++){
                 if(this.user_answer_array[i].correctness == true)
                     this.correct++
-                else
+                else{
                     this.incorrect++
+                    //this.incorrect_words = []
+                    this.incorrect_words.push({"word":this.user_answer_array[i].word, "mean":this.user_answer_array[i].mean})
+                }
                 
                 rows.push(this.user_answer_array[i])
 
@@ -224,8 +256,11 @@ export default {
             this.rows = rows
 
             console.log("rows::::::", this.rows)
+            
+
             this.isLoaded = false
             this.isResult = true
+            this.keepGoing = false
 
         },
         addBookmark(rowprop){
@@ -259,16 +294,45 @@ export default {
                  }
         },
         gotoMain(){
-            if(confirm("메인 화면으로 돌아가시겠습니까?")){
-                var test_record = []
+            //기록 저장
+                
+                var record = []
                 var currentDate = new Date()
-                var accuracy = Math.round(this.correct / (this.correct+this.incorrect) * 100)
-                var new_record = {'accuracy':accuracy, 'date':currentDate.getFullYear() + '-'+(parseInt(currentDate.getMonth())+ 1) +'-'+currentDate.getDate()}
-                test_record.push(new_record)
-                chrome.storage.sync.set({'test_record':test_record}, function(){
+                var correct_num = this.correct
+                var problem_num = this.problem_num
+                var accuracy = Math.round(correct_num / problem_num * 100)
+                var type = this.type
+                var category = this.category
+
+                var new_record = {'accuracy':accuracy, 'correct_num':correct_num, 'problem_num':problem_num, 'incorrect_words':this.incorrect_words,
+                                'type':type, 'category':category,
+                                'date':currentDate.getFullYear() + '-'+(parseInt(currentDate.getMonth())+ 1) +'-'+currentDate.getDate()}
+
+                console.log("new record", new_record)
+
+                chrome.storage.sync.get(['record'], function(userData) {
+
+                    console.log("userData.record:",userData.record)
+
+                    if(userData.record != null){
+                        record = userData.record
+                        console.log("record = userData.record:",record)
+                    }
                     
+                    record.push(new_record)
+
+                    console.log("after push record",record)
+                    
+                    chrome.storage.sync.set({'record':record}, function(){
+                            
+                    })
                 })
+
+            if(confirm("메인 화면으로 돌아가시겠습니까?")){
+            
+                
                 this.$router.push('/')
+                
             }
         },
         makeOptions(full_options, current_index){
@@ -285,7 +349,7 @@ export default {
             
             var ref = db.collection(this.type).doc(this.category)
             
-            var problem_num = 3; // 문항 수 (나중에 동적으로 바꿔야함)
+            var problem_num = this.problem_num; // 문항 수
 
             const option_num = 5; // 옵션 갯수 (보기 갯수 5개 고정)
 
@@ -308,16 +372,18 @@ export default {
                     }
 
 
-                    var pre_data = this.words //전처리 할 임시 전체 데이터 저장 (현재8개 기초 기준)
+                    var pre_data = this.words //전처리 할 임시 전체 데이터 저장
                     
                     console.log("PRE DATA ::::::::::::", pre_data)
 
-                    var problem_data = _.sampleSize(pre_data, problem_num) //문제로 낼 갯수만큼 전체 데이터에서 문항 수 만큼(현재3문제 기준) 랜덤으로 가져오기
+                    var problem_data = _.sampleSize(pre_data, problem_num) //문제로 낼 갯수만큼 전체 데이터에서 문항 수 만큼 랜덤으로 가져오기
 
                     console.log("PROBLEM DATA::::::::::::", problem_data)
 
                     var for_option_data = _.difference(pre_data, problem_data) // 문제로 내는 데이터를  전체 데이터에서 제외
-                    //for_option_data = _.sampleSize(for_option_data, 100)
+
+                    //for_option_data = _.sampleSize(for_option_data, 100) //db가 커질수록 옵션 데이터 수를 지정
+
                     console.log("OPTION DATA:::::::::::", for_option_data)
 
                     this.show_data = problem_data // 문제로 낼 데이터로 설정
@@ -347,7 +413,7 @@ export default {
 
                     for(var i=wordToMean; i<problem_num; i++){ // 한글 뜻 보고 영어단어 맞추기
 
-                        console.log("i:::::",i)
+                        //console.log("i:::::",i)
                         answer.push({
                             "text" : this.show_data[i].mean,
                             "value" : this.show_data[i].mean,
@@ -361,19 +427,19 @@ export default {
                             })
                     }
 
-                    console.log("ANSWER", answer)
+                    //console.log("ANSWER", answer)
                         
                     for(var i=0; i<answer.length; i++){
                         
                         var filterArray = for_option_data.filter(function(ele){
-                            return ele.class.includes(answer[i].class)
+                            return ele.class.includes(answer[i].class[0] || answer[i].class[1])
                         })
 
-                        console.log("filterArray",filterArray)
+                        //console.log("filterArray",filterArray)
 
                         var optionArray = _.sampleSize(filterArray, 4)
 
-                        console.log("option Array ", optionArray)
+                        //console.log("option Array ", optionArray)
                         if(answer[i].type == "wordToMean"){ // 오답 보기 만들기
 
                             for(var j=0; j<optionArray.length; j++){
@@ -386,7 +452,7 @@ export default {
                                     "answer" : optionArray[j].word,
                                     "correctness" : false,
                                     "word" : optionArray[j].word,
-                                    "mean" : optionArray[i].mean,
+                                    "mean" : optionArray[j].mean,
                                 })
                             }
                         }
@@ -427,8 +493,8 @@ export default {
 
                     this.wrong_answer = wrong_answer.division(4)
 
-                    console.log("answer", this.answer)
-                    console.log("THIS WRONG ANSWER", this.wrong_answer)
+                    //console.log("answer", this.answer)
+                    //console.log("THIS WRONG ANSWER", this.wrong_answer)
 
                     for(var i =0; i<this.answer.length; i++){
                         var option = []
@@ -440,7 +506,7 @@ export default {
                     }
                     
 
-                    console.log("full_options", this.full_options)
+                    //console.log("full_options", this.full_options)
                     
                     this.makeOptions(this.full_options, this.current_index)
                     this.isLoaded = true
@@ -454,9 +520,10 @@ export default {
         }   
     },
     mounted () {
-       console.log("mounted :"+this.category) 
+       //console.log("mounted :"+this.category) 
        this.getData()
-
+       this.timer()
+    
     }
 }
 </script>

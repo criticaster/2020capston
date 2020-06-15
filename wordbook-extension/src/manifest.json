@@ -1,14 +1,14 @@
 {
-  "name": "wordbook-extension",
-  "description": "A Vue.js web extension",
-  "version": null,
+  "name": "Highlight Dictionary",
+  "description": "검색, 북마크, 단어 테스트 기능 제공",
+  "version": "2.0.0",
   "manifest_version": 2,
   "icons": {
     "48": "icons/icon_48.png",
     "128": "icons/icon_128.png"
   },
   "browser_action": {
-    "default_title": "wordbook-extension",
+    "default_title": "Highlight Dictionary",
     "default_popup": "popup/popup.html"
   },
   "background": {
@@ -26,9 +26,7 @@
     "contextMenus",
     "notifications",
     "tts",
-    "background",
-    "tabs",
-    "activeTab"
+    "background"
   ],
   "content_scripts": [
     {

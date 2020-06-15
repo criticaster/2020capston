@@ -53,7 +53,7 @@
 
                     <template slot="table-row" slot-scope="props">
                         <span v-if="props.column.field == 'icon'">
-                            <b-button variant="outline-primary" size="sm" v-on:click="listen(props.row)"><b-icon icon="bar-chart-fill"></b-icon></b-button>
+                            <b-button variant="outline-primary" size="sm" v-on:click="listen(props.row)"><b-icon icon="soundwave"></b-icon></b-button>
                         </span>
                         <span v-if="props.column.field == 'delete'">
                             <b-button variant="outline-primary" size="sm" v-on:click="deleteBookmark(props.row)"><b-icon icon="trash"></b-icon></b-button>
@@ -200,22 +200,25 @@ export default {
                         })
                     }
                 }
-            })
+            
 
             chrome.storage.sync.get(['search_history'], function(userData){
                 
                 console.log("history userData:::::::", userData)
-                self.history = userData.search_history
+                if(userData.search_history != null){
+                    self.history = userData.search_history
 
-                for(var i=0; i<self.history.length; i++){
-                    var id_data = i;
-                    var word = self.history[i].word
-                    var date = self.history[i].date
+                    for(var i=0; i<self.history.length; i++){
+                        var id_data = i;
+                        var word = self.history[i].word
+                        var date = self.history[i].date
 
-                    self.search_rows.push({
-                        "id":id_data, "word":word, "date":date
-                    })
+                        self.search_rows.push({
+                            "id":id_data, "word":word, "date":date
+                        })
+                    }
                 }
+            })
             })
         },
         requestSearch(row){

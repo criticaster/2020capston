@@ -24,12 +24,22 @@ var config = {
     "contexts" : ["selection"]
   }
 
-  var show_tooltip = true;
+  var show_tooltip = null;
   // chrome.contextMenus.create(contextMenuItem)
   chrome.runtime.onInstalled.addListener(function(){
     chrome.contextMenus.create(contextMenuItem)
   })
   
+  chrome.storage.sync.get(['tooltip'], function(userData){
+    if(userData.tooltip == null){
+        chrome.storage.sync.set({'tooltip': true}, function(){
+
+        })
+    }
+    else{
+        show_tooltip = userData.tooltip
+    }
+  })
 
   function isEnglishWord(str){
     var letters = /^[a-zA-Z]+$/;
@@ -117,7 +127,7 @@ function toBookMarkData(word) { // word 를 네이버 사전에 물어보고 단
          var seleted_str = clickData.selectionText.toLowerCase();  
          seleted_str = seleted_str.trim();
         
-        alert(seleted_str)
+        //alert(seleted_str)
 
          //영어인지 확인
          if(isEnglishWord(seleted_str)){
@@ -199,7 +209,7 @@ function searchForTooltip(selected_str) {
                         data = data.substring(data.indexOf('"entryName":') + 13);
                         var entryName = data.substring(0, data.indexOf('"'));
                         tooltip_content = '<b-button class="highlight_tooltip_word" style="color:yellow;">';
-                        tooltip_content += entryName + ' <img src="https://raw.githubusercontent.com/km01/km01.github.io/master/assets/img/mic16_3.png"> </b-button>';
+                        tooltip_content += entryName + ' <img src="https://raw.githubusercontent.com/km01/km01.github.io/master/assets/img/mic16_2.png" style="width:16px; height:14px;"> </b-button>';
                         var mean_list_src = data.substring(data.indexOf('"mean":[') + 7, data.indexOf('"],"') + 2);
                         var mean_list = [];
                         var count = 0;
@@ -236,13 +246,20 @@ function searchForTooltip(selected_str) {
     return tooltip_content;
 }
 
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if(request.todo == "searchThis") {
-        //alert("searchThis accept")
+    if(request.todo == "searchThis" && show_tooltip) {
+        
         sendResponse({res: searchForTooltip(request.word)});
     }
     if(request.todo == "speakIt"){
 
         chrome.tts.speak(request.word, {'lang':'en-US', 'rate':1.0});
+    }
+    if(request.todo == "toggle_tooltip"){
+        
+        show_tooltip = !show_tooltip
+
+        //console.log("current back tooltip::::", show_tooltip)
     }
 });
