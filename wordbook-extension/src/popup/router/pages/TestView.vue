@@ -176,7 +176,7 @@ export default {
 
             this.current_index++;
 
-            console.log("this.showdata WORD:::::::", this.show_data[this.current_index - 1].word)
+            //console.log("this.showdata WORD:::::::", this.show_data[this.current_index - 1].word)
 
             if(this.current_index < this.problem_num){
                 
@@ -185,9 +185,9 @@ export default {
                 var answer = this.show_data[this.current_index - 1].answer
                 var user_answer = this.selected
                 var correctness = null
-                console.log("answer",answer)
-                console.log("user_answer",user_answer)
-                console.log("answer == user_answer", answer == user_answer)
+                // console.log("answer",answer)
+                // console.log("user_answer",user_answer)
+                // console.log("answer == user_answer", answer == user_answer)
                 if(answer == user_answer){
                     correctness = true
                 }
@@ -206,7 +206,7 @@ export default {
                 this.makeOptions(this.full_options, this.current_index)
 
                 this.selected = ''
-                console.log(JSON.stringify(this.user_answer_array))
+                //console.log(JSON.stringify(this.user_answer_array))
             }
             
 
@@ -220,9 +220,9 @@ export default {
                 var user_answer = this.selected
                 var correctness = null
                 
-                console.log("answer",answer)
-                console.log("user_answer",user_answer)
-                console.log("answer == user_answer", answer == user_answer)
+                //console.log("answer",answer)
+                //console.log("user_answer",user_answer)
+                //console.log("answer == user_answer", answer == user_answer)
 
                 if(answer == user_answer)
                     correctness = true
@@ -255,7 +255,7 @@ export default {
             }
             this.rows = rows
 
-            console.log("rows::::::", this.rows)
+            //console.log("rows::::::", this.rows)
             
 
             this.isLoaded = false
@@ -308,20 +308,20 @@ export default {
                                 'type':type, 'category':category,
                                 'date':currentDate.getFullYear() + '-'+(parseInt(currentDate.getMonth())+ 1) +'-'+currentDate.getDate()}
 
-                console.log("new record", new_record)
+                //console.log("new record", new_record)
 
                 chrome.storage.sync.get(['record'], function(userData) {
 
-                    console.log("userData.record:",userData.record)
+                    //console.log("userData.record:",userData.record)
 
                     if(userData.record != null){
                         record = userData.record
-                        console.log("record = userData.record:",record)
+                        //console.log("record = userData.record:",record)
                     }
                     
                     record.push(new_record)
 
-                    console.log("after push record",record)
+                    //console.log("after push record",record)
                     
                     chrome.storage.sync.set({'record':record}, function(){
                             
@@ -356,16 +356,16 @@ export default {
             var getData = ref.get() // 데이터 가져오기
             .then(doc => {
                 if (!doc.exists) {
-                console.log('No such document!');
+                //console.log('No such document!');
                 } else {
-                    console.log('Document data:', doc.data());
+                    //console.log('Document data:', doc.data());
                     this.words = doc.data().data // this.words에 firestore 데이터 저장
                     
-                    console.log("this word : ", this.words)
+                    //console.log("this word : ", this.words)
 
                     this.data_index = this.words.length; // 데이터 전체 길이
 
-                    console.log("데이터 전체 길이" + this.data_index)
+                    //console.log("데이터 전체 길이" + this.data_index)
 
                     function getRandomInt(min, max) { //min ~ max 사이의 임의의 정수 반환
                         return Math.floor(Math.random() * (max - min)) + min;
@@ -374,24 +374,24 @@ export default {
 
                     var pre_data = this.words //전처리 할 임시 전체 데이터 저장
                     
-                    console.log("PRE DATA ::::::::::::", pre_data)
+                    //console.log("PRE DATA ::::::::::::", pre_data)
 
                     var problem_data = _.sampleSize(pre_data, problem_num) //문제로 낼 갯수만큼 전체 데이터에서 문항 수 만큼 랜덤으로 가져오기
 
-                    console.log("PROBLEM DATA::::::::::::", problem_data)
+                   // console.log("PROBLEM DATA::::::::::::", problem_data)
 
                     var for_option_data = _.difference(pre_data, problem_data) // 문제로 내는 데이터를  전체 데이터에서 제외
 
                     //for_option_data = _.sampleSize(for_option_data, 100) //db가 커질수록 옵션 데이터 수를 지정
 
-                    console.log("OPTION DATA:::::::::::", for_option_data)
+                    //console.log("OPTION DATA:::::::::::", for_option_data)
 
                     this.show_data = problem_data // 문제로 낼 데이터로 설정
 
                     var answer = []
                     var wrong_answer = []
 
-                    console.log("SHOW DATA::::::::::::::",this.show_data)
+                    //console.log("SHOW DATA::::::::::::::",this.show_data)
 
                     var wordToMean = Math.round(problem_num / 2)
                     var meanToWord = problem_num - wordToMean

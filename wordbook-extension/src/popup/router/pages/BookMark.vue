@@ -186,14 +186,14 @@ export default {
 
                     self.words = userData.word_list
 
-                    console.log(self.words)
+                    //console.log(self.words)
                     
                     for(var i=0; i<self.words.length; i++){
                     var id_data = i;
                     var word_data = self.words[i].word;
                     var mean_data = self.words[i].ko_means.toString();
                     var createdAt_data = self.words[i].date;
-                    console.log(id_data + " "+ word_data + " "+ mean_data + "" + createdAt_data)
+                    //console.log(id_data + " "+ word_data + " "+ mean_data + "" + createdAt_data)
                     
                     self.rows.push({
                         "id":id_data, "word":word_data, "mean":mean_data, "createdAt":createdAt_data,
@@ -204,7 +204,7 @@ export default {
 
             chrome.storage.sync.get(['search_history'], function(userData){
                 
-                console.log("history userData:::::::", userData)
+                //console.log("history userData:::::::", userData)
                 if(userData.search_history != null){
                     self.history = userData.search_history
 
@@ -237,10 +237,10 @@ export default {
             if(confirm(row.word + "를 검색 기록에서 삭제 하시겠습니까?")){
                 
                 chrome.storage.sync.get(['search_history'], function(userData){
-                    console.log(JSON.stringify(userData))
+                    //console.log(JSON.stringify(userData))
                     const isRowData = (element) => element.word == row.word
     
-                    console.log(userData.search_history.findIndex(isRowData))
+                    //console.log(userData.search_history.findIndex(isRowData))
                     var delete_data_index = userData.search_history.findIndex(isRowData)
                     var history = userData.search_history
     
@@ -266,10 +266,10 @@ export default {
             if(confirm(row.word + "를 단어장에서 삭제 하시겠습니까?")){
                 
                 chrome.storage.sync.get(['word_list'], function(userData){
-                    console.log(JSON.stringify(userData))
+                    //console.log(JSON.stringify(userData))
                     const isRowData = (element) => element.word == row.word
     
-                    console.log(userData.word_list.findIndex(isRowData))
+                    //console.log(userData.word_list.findIndex(isRowData))
                     var delete_data_index = userData.word_list.findIndex(isRowData)
                     var word_list = userData.word_list
     
