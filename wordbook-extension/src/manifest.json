@@ -1,7 +1,7 @@
 {
   "name": "Highlight Dictionary",
   "description": "검색, 북마크, 단어 테스트 기능 제공",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "manifest_version": 2,
   "icons": {
     "48": "icons/icon_48.png",
@@ -13,7 +13,7 @@
   },
   "background": {
     "scripts": ["background.js"],
-    "persistent" : true
+    "persistent" : false
   },
   "options_ui": {
     "page": "options/options.html",
